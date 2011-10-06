@@ -1,0 +1,2 @@
+class SitesPage < Page
+end

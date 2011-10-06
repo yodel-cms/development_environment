@@ -1,0 +1,2 @@
+class Remote < Page
+end
