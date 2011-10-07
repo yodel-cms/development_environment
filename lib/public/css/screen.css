@@ -1,0 +1,43 @@
+h2 {
+  margin-top: 30px;
+}
+
+ul {
+  border-top: 1px solid #eee;
+  color: #777;
+}
+
+ul li {
+  border-bottom: 1px solid #eee;
+  line-height: 35px;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a.action {
+  float: right;
+  font-size: 12px;
+  margin-left: 15px;
+}
+
+h1 + form, p + form {
+  margin-top: 20px;
+}
+
+#new_site form {
+  width: 600px;
+}
+
+  #new_site div div {
+    width: 500px;
+  }
+
+    #new_site div div input[type=text] {
+      width: 300px;
+    }

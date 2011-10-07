@@ -1,0 +1,7 @@
+<p>All Yodel sites have an admin panel which requires a username and password to access. Enter the details you would like to use to login. You can change these details on a site by site basis, and for all new sites by visiting setup again.</p>
+<% form_for_new_record remote: true do |form| %>
+  <%= form.field_row :name %>
+  <%= form.field_row :email %>
+  <%= form.field_row :password %>
+  <input type="submit" value="Save">
+<% end %>

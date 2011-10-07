@@ -1,6 +1,6 @@
 class SitesPageModelMigration < Migration
   def self.up(site)
-    site.pages.create :sites_page do |sites_pages|
+    site.pages.create_model :sites_page do |sites_pages|
       sites_pages.record_class_name = 'SitesPage'
     end
   end

@@ -1,0 +1,31 @@
+<ul>
+  <% if Remote.count > 0 %>
+    <% Remote.all.each do |remote| %>
+      <li>
+        <a href="<%= remote.path %>"><%= remote.name %></a>
+        <%= remote.delete_link 'Delete', class: 'action', confirm: 'Are you sure you want to delete this remote?' %>
+      </li>
+    <% end %>
+  <% else %>
+    <li>No remotes</li>
+  <% end %>
+</ul>
+<a class="action" href="#" id="add_remote">Add Remote</a>
+<a class="action" href="/sites">Manage Sites</a>
+
+<div id="new_remote" style="display: none; padding-top: 30px; padding-bottom: 30px">
+  <% form_for Remote.new, self.path, remote: true do |form| %>
+    <%= form.field_row :name %>
+    <%= form.field_row :url %>
+    <%= form.field_row :username %>
+    <%= form.field_row :password %>
+    <input type="submit" value='Add'>
+  <% end %>
+</div>
+
+<script>
+  $('#add_remote').click(function(event) {
+    $('#new_remote').slideToggle();
+    event.preventDefault();
+  })
+</script>

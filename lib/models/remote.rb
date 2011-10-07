@@ -1,2 +1,0 @@
-class Remote < Page
-end

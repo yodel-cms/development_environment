@@ -1,0 +1,7 @@
+<p>You can publish your sites to a remote Yodel server by entering your details below. You can skip this step and add a remote server later.</p>
+<% form_for_new_record remote: true do |form| %>
+  <%= form.field_row :name %>
+  <%= form.field_row :email %>
+  <%= form.field_row :password %>
+  <input type="submit" value="Save">
+<% end %>
