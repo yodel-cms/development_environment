@@ -1,0 +1,13 @@
+<h1><%= record.name %></h1>
+
+<% form_for record, remote: true do |form| %>
+  <%= form.field_row :name %>
+  <%= form.field_row :url %>
+  <%= form.field_row :username %>
+  <%= form.field_row :password %>
+  <input type="submit" value='Save'>
+  <button onclick="window.location = '/remotes'">Cancel</button>
+  <% form.success do %>
+    window.location = '/remotes';
+  <% end %>
+<% end %>

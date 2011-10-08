@@ -10,11 +10,15 @@
     <title>Yodel</title>
   </head>
   <body>
-    <div id="modal">
-      <div id="lip"></div>
-      <header>yodel</header>
-      <h1><%= title %></h1>
+    <article>
+      <header>
+        <div id="lip"></div>
+        <h1>yodel</h1>
+        <% if site.default_users.count > 0 %>
+          <%= menu :nav %>
+        <% end %>
+      </header>
       <%= content %>
-    </div>
+    </article>
   </body>
 </html>

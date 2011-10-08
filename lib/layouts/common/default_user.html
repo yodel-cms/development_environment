@@ -1,0 +1,7 @@
+<h1>Default User</h1>
+<% form_for site.default_users.first, remote: true do |form| %>
+  <%= form.field_row :name %>
+  <%= form.field_row :email %>
+  <%= form.field_row :password %>
+  <input type="submit" value="Save">
+<% end %>

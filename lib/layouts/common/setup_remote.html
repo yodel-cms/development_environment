@@ -1,7 +1,12 @@
 <p>You can publish your sites to a remote Yodel server by entering your details below. You can skip this step and add a remote server later.</p>
-<% form_for_new_record remote: true do |form| %>
+<% page('/remotes').form_for Remote.new(name: 'Yodel CMS', url: 'http://yodelcms.com/', username: site.default_users.first.email), remote: true do |form| %>
   <%= form.field_row :name %>
-  <%= form.field_row :email %>
+  <%= form.field_row :url %>
+  <%= form.field_row :username %>
   <%= form.field_row :password %>
   <input type="submit" value="Save">
+  <% form.success do %>
+    window.location = '/sites';
+  <% end %>
 <% end %>
+<a href="/sites" class="action">Skip to Sites</a>

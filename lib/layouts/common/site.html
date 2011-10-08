@@ -1,0 +1,9 @@
+<h1><%= record.name %></h1>
+<p>Enter the root directory for this site. The previous root directory was:<br><%= record.root_directory %></p>
+<% form_for record, remote: true do |form| %>
+  <%= form.field_row :root_directory %>
+  <input type="submit" value="Save">
+  <% form.success do %>
+    window.location = 'http://<%= record.domains.first %><% if request.port != 80 %>:<%= request.port %><% end %>';
+  <% end %>
+<% end %>
