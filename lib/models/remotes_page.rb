@@ -26,5 +26,9 @@ class RemotesPage < RecordProxyPage
         super()
       end
     end
+    
+    with :json do
+      record.site_list
+    end
   end
 end

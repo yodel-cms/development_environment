@@ -12,6 +12,12 @@ ul li {
   line-height: 35px;
 }
 
+.remotes li img {
+  position: relative;
+  top: 6px;
+  left: 20px;
+}
+
 a {
   text-decoration: none;
 }
