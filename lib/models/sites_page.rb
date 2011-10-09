@@ -23,6 +23,11 @@ class SitesPage < RecordProxyPage
   # create a site
   respond_to :post do
     with :html do
+      if site.default_users.count == 0
+        response.redirect '/setup'
+        return
+      end
+      
       name = params['name'].sub('.yodel', '')
       if name.blank?
         flash[:error] = 'You must enter a name for this site'
