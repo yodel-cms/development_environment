@@ -37,6 +37,9 @@ class SitesPage < RecordProxyPage
       # create a new folder for the site
       site_dir = File.join(Yodel.config.sites_root, name)
       FileUtils.cp_r(File.join(File.dirname(__FILE__), '..', 'site_template'), site_dir)
+      
+      # rename the gitignore file so it becomes active
+      FileUtils.mv(File.join(site_dir, 'gitignore'), File.join(site_dir, '.gitignore'))
 
       # create the new site
       new_site = Site.new
