@@ -1,4 +1,4 @@
-class SitesPage < RecordProxyPage
+class DevelopmentSitesPage < RecordProxyPage
   # record proxy pages deal with site models (site.model_name). Override the methods it uses
   # to interact with these models we can edit Sites (a non site model)
   def record
