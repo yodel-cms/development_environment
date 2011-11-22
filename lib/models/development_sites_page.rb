@@ -1,4 +1,6 @@
 class DevelopmentSitesPage < RecordProxyPage
+  REMOTE_NAME = 'yodel'
+  
   # record proxy pages deal with site models (site.model_name). Override the methods it uses
   # to interact with these models we can edit Sites (a non site model)
   def record
@@ -22,22 +24,81 @@ class DevelopmentSitesPage < RecordProxyPage
 
   # create a site
   respond_to :post do
+    # clone a site from a remote server
+    with :json do
+      # ensure yodel is set up
+      default_user = site.default_users.first
+      return {success: false, reason: 'No default user has been created'} if site.default_users.count == 0
+      
+      # extract the site name and generate an identifier to be used as the site's domain and folder name
+      site_name = params['name'].to_s
+      identifier = site_name.downcase.gsub(/[^a-z0-9]+/, '_')
+      return {success: false, reason: 'No site name provided'} if site_name.blank? || identifier.blank?
+      
+      # find the remote to clone from
+      remote = Remote.find(BSON::ObjectId.from_string(params['remote']))
+      return {success: false, reason: 'Remote could not be found'} if remote.nil?
+      
+      # construct the git url used to clone the site
+      remote_id = params['remote_id']
+      git_url = remote.git_url(remote_id)
+      return {success: false, reason: 'Git URL could not be constructed'} if git_url.blank?
+      
+      # find an unused site folder name
+      site_folder = identifier
+      counter = 0
+      while File.exist?(File.join(Yodel.config.sites_root, site_folder))
+        counter += 1
+        site_folder = "#{identifier}_#{counter}"
+      end
+      
+      # clone the repos locally  
+      Dir.chdir(Yodel.config.sites_root) do
+        result = `#{Yodel.config.git_path} clone -o #{REMOTE_NAME} #{git_url} #{site_folder}`
+        return {success: false, reason: 'Git error: ' + $1} if result =~ /error: (.+)$/
+      end
+      
+      # create a new site from the cloned site.yml file
+      site_yml = File.join(Yodel.config.sites_root, site_folder, Yodel::SITE_YML_FILE_NAME)
+      return {success: false, reason: 'Site yml file was not cloned successfully'} unless File.exist?(site_yml)
+      new_site = Site.load_from_site_yaml(site_yml)
+      
+      # find an unused default local domain
+      domain = "#{identifier}.yodel"
+      counter = 0
+      while Site.exists?(domains: domain)
+        counter += 1
+        domain = "#{identifier}-#{counter}.yodel"
+      end
+      
+      # add the remote and a new default local domain
+      new_site.domains.unshift(domain)
+      new_site.remote_id = remote_id
+      new_site.remote = remote
+      new_site.save
+      
+      # initialise the site
+      Migration.run_migrations(new_site)
+      create_default_user(new_site, default_user)
+      {success: true, url: new_site_url(new_site)}
+    end
+    
+    # create a new local site
     with :html do
-      if site.default_users.count == 0
+      # the default user is required for the git repos, and creating an
+      # admin account in the new site
+      default_user = site.default_users.first
+      if default_user.nil?
         response.redirect '/setup'
         return
       end
       
-      name = params['name'].sub('.yodel', '')
+      name = cleanse_name(params['name'].sub('.yodel', ''))
       if name.blank?
         flash[:error] = 'You must enter a name for this site'
         response.redirect '/sites'
         return
       end
-      
-      # the default user is required for the git repos, and creating an
-      # admin account in the new site
-      default_user = site.default_users.first
       
       # create a new folder for the site
       site_dir = File.join(Yodel.config.sites_root, name)
@@ -80,8 +141,19 @@ class DevelopmentSitesPage < RecordProxyPage
       # save and initialise the site
       new_site.save
       Migration.run_migrations(new_site)
+      create_default_user(new_site, default_user)
 
-      # create a default admin user
+      # redirect to the new site
+      response.redirect new_site_url(new_site)
+    end
+  end
+  
+  private
+    def cleanse_name(name)
+      name.downcase.gsub(/[^a-z0-9]+/, '_')
+    end
+    
+    def create_default_user(new_site, default_user)
       user = new_site.users.new
       user.first_name = default_user.name
       user.email = default_user.email
@@ -89,16 +161,16 @@ class DevelopmentSitesPage < RecordProxyPage
       user.password = Password.hashed_password(nil, default_user.password)
       user.groups << new_site.groups['Developers']
       user.save
-
+      
       # because of the before_create callback, we need to override
       # the salt and password manually by saving again
       user.password_salt = nil
       user.password = Password.hashed_password(nil, default_user.password)
       user.save_without_validation
-
-      # redirect to the new site
-      port = (request.port == 80 ? nil : request.port)
-      response.redirect "http://#{new_site.domains.first}#{':' if port}#{port}/admin/pages"
     end
-  end  
+    
+    def new_site_url(new_site)
+      port = (request.port == 80 ? nil : request.port)
+      "http://#{new_site.domains.first}#{':' if port}#{port}/admin/pages"
+    end
 end

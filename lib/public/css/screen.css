@@ -47,3 +47,13 @@ h1 + form, p + form {
     #new_site div div input[type=text] {
       width: 300px;
     }
+
+.remote_name {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.remote_site a.cloning {
+  background: center center url(/core/images/spinner.gif) no-repeat;
+  color: transparent;
+}

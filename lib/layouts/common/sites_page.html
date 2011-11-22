@@ -17,7 +17,7 @@
 <ul class="remotes">
   <% if Remote.count > 0 %>
     <% Remote.all.each do |remote| %>
-      <li data-remote-id="<%= remote.id %>" data-remote-name="<%= remote.name %>">Loading <%= remote.name %>... <img src="/core/images/spinner.gif"></li>
+      <li data-remote="<%= remote.id %>" data-remote-name="<%= remote.name %>">Loading <%= remote.name %>... <img src="/core/images/spinner.gif"></li>
     <% end %>
   <% else %>
     <li>No remote sites</li>
@@ -46,16 +46,17 @@
     event.preventDefault();
   });
   
-  var sitesRemaining = $('li[data-remote-id]').length;
+  var sitesRemaining = $('li[data-remote]').length;
   var sites = 0;
-  $('li[data-remote-id]').each(function(index, row) {
+  // FIXME: need error handler here
+  $('li[data-remote]').each(function(index, row) {
     row = $(row);
-    $.ajax('/remotes.json?id=' + row.attr('data-remote-id'), {dataType: 'json', success: function(data) {
+    $.ajax('/remotes.json?id=' + row.attr('data-remote'), {dataType: 'json', success: function(data) {
       if(data.success) {
         for(var i = 0; i < data.sites.length; i++) {
           var site = data.sites[i];
           if($('li[data-site-id=' + site.id + ']').length == 0) {
-            $('.remotes').append("<li>" + site.name + "<a href='#' class='action'>Clone from " + row.attr('data-remote-name') + "</a></li>");
+            $('.remotes').append("<li class='remote_site'>" + site.name + " <span class='remote_name'>(" + row.attr('data-remote-name') + ")</span><a href='#' data-remote='" + row.attr('data-remote') + "' data-remote-id='" + site.id + "' data-site-name='" + site.name + "' class='action'>Clone</a></li>");
             sites += 1;
           }
         }
