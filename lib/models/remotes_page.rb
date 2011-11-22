@@ -28,7 +28,15 @@ class RemotesPage < RecordProxyPage
     end
     
     with :json do
-      record.site_list
+      result = record.site_list
+      
+      if result['success']
+        result['sites'] = result['sites'].reject do |remote_site|
+          Site.exists?(remote_id: remote_site['id'])
+        end
+      end
+      
+      result
     end
   end
 end
