@@ -50,7 +50,7 @@ class DevelopmentSitesPage < RecordProxyPage
       new_site = Site.new
       new_site.name = name
       new_site.root_directory = site_dir
-      new_site.domains << "#{name}.yodel"      
+      new_site.domains << "#{name}.yodel"
 
       # copy core yodel migrations
       yodel_migrations_dir = File.join(site_dir, Yodel::MIGRATIONS_DIRECTORY_NAME, Yodel::YODEL_MIGRATIONS_DIRECTORY_NAME)
