@@ -135,6 +135,7 @@ class DevelopmentSitesPage < RecordProxyPage
       repos = Git.init(site_dir)
       repos.config('user.name', default_user.name)
       repos.config('user.email', default_user.email)
+      repos.config('http.postBuffer', (200 * 1024 * 1024))
       repos.add([Yodel::LAYOUTS_DIRECTORY_NAME, Yodel::MIGRATIONS_DIRECTORY_NAME, Yodel::PARTIALS_DIRECTORY_NAME, Yodel::PUBLIC_DIRECTORY_NAME, Yodel::ATTACHMENTS_DIRECTORY_NAME])
       repos.commit_all('New yodel site')
 
