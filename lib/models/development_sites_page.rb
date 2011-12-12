@@ -74,11 +74,12 @@ class DevelopmentSitesPage < RecordProxyPage
       new_site = Site.load_from_site_yaml(site_yml)
       
       # find an unused default local domain
-      domain = "#{identifier}.yodel"
+      domain_identifier = identifier.gsub('_', '')
+      domain = "#{domain_identifier}.yodel"
       counter = 0
       while Site.exists?(domains: domain)
         counter += 1
-        domain = "#{identifier}-#{counter}.yodel"
+        domain = "#{domain_identifier}-#{counter}.yodel"
       end
       
       # add the remote and a new default local domain
