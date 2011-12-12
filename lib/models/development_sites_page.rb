@@ -58,6 +58,16 @@ class DevelopmentSitesPage < RecordProxyPage
         return {success: false, reason: 'Git error: ' + $1} if result =~ /error: (.+)$/
       end
       
+      # when running as a daemon, the root user will own the cloned repos
+      Dir.chdir(Yodel.config.sites_root) do
+        return unless Yodel.config.owner_user
+        if Yodel.config.owner_group != 0
+          FileUtils.chown_R(Yodel.config.owner_user, Yodel.config.owner_group, site_folder)
+        else
+          FileUtils.chown_R(Yodel.config.owner_user, nil, site_folder)
+        end
+      end
+      
       # create a new site from the cloned site.yml file
       site_yml = File.join(Yodel.config.sites_root, site_folder, Yodel::SITE_YML_FILE_NAME)
       return {success: false, reason: 'Site yml file was not cloned successfully'} unless File.exist?(site_yml)
